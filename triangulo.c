@@ -41,7 +41,7 @@ double distancia(punto_t p1, punto_t p2) // Funcion dvolver la distancia euclide
   return sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
 }
 
-/* Construcción del triangulo */
+/* Construccion del triangulo */
 
 trian_t crear_triangulo(punto_t v1, punto_t v2, punto_t v3) // Funcion crear puntos
 {
@@ -50,17 +50,6 @@ trian_t crear_triangulo(punto_t v1, punto_t v2, punto_t v3) // Funcion crear pun
   triangulo.v2 = v2;
   triangulo.v3 = v3;
   return triangulo;
-}
-
-int es_valido(trian_t t)
-{
-  double d12 = distancia(t.v1, t.v2);
-  double d23 = distancia(t.v2, t.v3);
-  double d13 = distancia(t.v1, t.v3);
-  if (d12 + d23 <= d13 || d23 + d13 <= d12 || d12 + d13 <= d23)
-    return 0;
-  else
-    return 1;
 }
 
 /* Calculos elementales */
@@ -82,6 +71,25 @@ double area(trian_t t) // Funcion devuelve area del triangulo
   return sqrt(s * (s - d12) * (s - d23) * (s - d13));
 }
 
+/* Validacion */
+
+int es_valido(trian_t t)
+{
+  double d12 = distancia(t.v1, t.v2);
+  double d23 = distancia(t.v2, t.v3);
+  double d13 = distancia(t.v1, t.v3);
+  if (d12 + d23 < d13 || d23 + d13 < d12 || d12 + d13 < d23 || eq(d12 + d23, d13) || eq(d23 + d13, d12) || eq(d12 + d13, d23)) 
+  {
+    printf("Es invalido\n");
+    return 0;
+  }
+  else
+  {
+    printf("Es valido\nPerimetro: %0.3f\nArea: %0.3f\n", perimetro(t), area(t));
+    return 1;
+  }
+}
+
 /* Utilidades */
 
 void imprimir(trian_t t) // Funcion mostrar triangulo por pantalla
@@ -94,21 +102,35 @@ void imprimir(trian_t t) // Funcion mostrar triangulo por pantalla
 int main()
 {
   /* Declaracion de variables */
-  punto_t v11, v12, v13;
+  char decision;
+  float x, y;
+  punto_t v1, v2, v3;
   trian_t t1;
 
-  /* Asignacion de valores de variables */
-  v11 = crear_punto(-1, 0);
-  v12 = crear_punto(0, 1);
-  v13 = crear_punto(1, 0);
-  t1 = crear_triangulo(v11, v12, v13);
+  /* Creacion del triangulo */
+
+  printf("Introduce los vertices de un triangulo en el formato (x,y)\n");
+  do
+  {
+    printf("Vertice 1 > ");
+    scanf(" (%f,%f)", &x, &y);
+    v1 = crear_punto(x, y);
+
+    printf("Vertice 2 > ");
+    scanf(" (%f,%f)", &x, &y);
+    v2 = crear_punto(x, y);
+
+    printf("Vertice 3 > ");
+    scanf(" (%f,%f)", &x, &y);
+    v3 = crear_punto(x, y);
+
+    t1 = crear_triangulo(v1, v2, v3);
+    imprimir(t1);
+    es_valido(t1);
+
+    printf("Crear otro triangulo? (s/n) > ");
+    scanf(" %c", &decision);
+  } while ((decision != 's' && decision != 'n') || decision == 's');
 
   /* Mostrar por pantalla */
-  imprimir(t1);
-
-  /* Verificacion y calculos */
-  if (es_valido(t1))
-    printf("Es valido\nPerimetro: %0.3f\nArea: %0.3f", perimetro(t1), area(t1));
-  else
-    printf("Es invalido\n");
 }
