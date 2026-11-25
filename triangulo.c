@@ -78,7 +78,7 @@ int es_valido(trian_t t)
   double d12 = distancia(t.v1, t.v2);
   double d23 = distancia(t.v2, t.v3);
   double d13 = distancia(t.v1, t.v3);
-  if (d12 + d23 < d13 || d23 + d13 < d12 || d12 + d13 < d23 || eq(d12 + d23, d13) || eq(d23 + d13, d12) || eq(d12 + d13, d23)) 
+  if (d12 + d23 < d13 || d23 + d13 < d12 || d12 + d13 < d23 || eq(d12 + d23, d13) || eq(d23 + d13, d12) || eq(d12 + d13, d23))
   {
     printf("Es invalido\n");
     return 0;
@@ -88,6 +88,51 @@ int es_valido(trian_t t)
     printf("Es valido\nPerimetro: %0.3f\nArea: %0.3f\n", perimetro(t), area(t));
     return 1;
   }
+}
+
+/* Comprovación de tipo */
+
+void tipo_por_lado(trian_t t)
+{
+  double d12 = distancia(t.v1, t.v2);
+  double d23 = distancia(t.v2, t.v3);
+  double d13 = distancia(t.v1, t.v3);
+  char *tipo;
+  if (eq(d12, d23) && eq(d23, d13) && eq(d12, d13))
+    tipo = "Equilatero";
+  else if (eq(d12, d23) || eq(d23, d13) || eq(d12, d13))
+    tipo = "Isosceles";
+  else
+    tipo = "Escaleno";
+  printf("Tipo por lado: %s\n", tipo);
+}
+
+void tipo_por_angulo(trian_t t)
+{
+  double d12 = distancia(t.v1, t.v2);
+  double d23 = distancia(t.v2, t.v3);
+  double d13 = distancia(t.v1, t.v3);
+  char *tipo;
+  double mayor = d12, menor1 = d23, menor2 = d13;
+  if (d23 > d12 && d23 > d13)
+  {
+    mayor = d23;
+    menor1 = d12;
+    menor2 = d13;
+  }
+  else if (d13 > d12 && d13 > d23)
+  {
+    mayor = d13;
+    menor1 = d12;
+    menor2 = d23;
+  }
+  if (mayor * mayor > menor1 * menor1 + menor2 * menor2)
+    tipo = "Obstusangulo";
+  else if (eq(mayor * mayor, menor1 * menor1 + menor2 * menor2))
+    tipo = "Rectangulo";
+  else if (mayor * mayor < menor1 * menor1 + menor2 * menor2)
+    tipo = "Acutangulo";
+  printf("Tipo por angulo: %s\n", tipo);
 }
 
 /* Utilidades */
@@ -126,8 +171,12 @@ int main()
 
     t1 = crear_triangulo(v1, v2, v3);
     imprimir(t1);
-    es_valido(t1);
-
+    if (es_valido(t1))
+    {
+      tipo_por_lado(t1);
+      tipo_por_angulo(t1);
+    }
+    /* Decidir crear otro triangulo o parar */
     printf("Crear otro triangulo? (s/n) > ");
     scanf(" %c", &decision);
   } while ((decision != 's' && decision != 'n') || decision == 's');
